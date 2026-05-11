@@ -164,8 +164,14 @@
       will-change: transform;
     }
     
-    .hero-bg { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%); }
-    .hero-bg::after { content: ''; position: absolute; top: 30%; left: 70%; width: 50%; height: 50%; background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%); }
+    .hero-bg { background-image: url('assets/hero.png'); }
+    .hero-bg::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 0%, var(--charcoal) 100%); z-index: 2; }
+    
+    .robot-visual {
+      position: absolute; right: 5%; top: 50%; transform: translateY(-50%) rotateY(-20deg);
+      width: 45%; max-width: 600px; z-index: 6;
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.9)); pointer-events: none; opacity: 0;
+    }
     
     .section-number { color: var(--gold); font-size: 14px; letter-spacing: 3px; text-transform: uppercase; display: block; margin-bottom: 16px; }
     
@@ -355,6 +361,7 @@
         <p class="section-copy reveal-up" data-i18n="hero_subtitle" style="margin-bottom: 40px; max-width: 600px;">AI Dynamic.pro acquires premium farmland. Deploys AI robotics. Scales sustainable agriculture from Miami outward.</p>
         <a href="#problem" class="cta-button reveal-up" data-i18n="explore_btn">Explore the Vision</a>
       </div>
+      <img src="assets/hero.png" class="robot-visual" id="hero-robot" onerror="this.style.display='none'">
     </section>
 
     <!-- SECTION 2: PROBLEM -->
@@ -902,6 +909,7 @@
       gsap.registerPlugin(ScrollTrigger);
       
       gsap.to(".hero-bg", { scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: true }, yPercent: 30, ease: "none" });
+      gsap.to("#hero-robot", { scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 }, x: 100, rotateY: 45, opacity: 1, scale: 1.1 });
       
       document.querySelectorAll('.reveal-up').forEach((el, index) => {
         gsap.to(el, { scrollTrigger: { trigger: el, start: "top 85%" }, opacity: 1, y: 0, rotateX: 0, duration: 0.8, ease: "power3.out" });
