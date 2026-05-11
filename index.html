@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confidential | AI Dynamic.pro</title>
+  <meta name="description" content="AI Dynamic.pro: Premium farmland acquisition + AI robotics integration. Confidential investor presentation.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Canela:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <!-- Signature Pad -->
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+  
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  
+  <style>
+    :root {
+      --charcoal: #0A0A0A;
+      --gold: #D4AF37;
+      --gold-light: #E8C57A;
+      --ivory: #F5F2EB;
+      --soft-black: #1A1A1A;
+      --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--charcoal);
+      color: var(--ivory);
+      line-height: 1.6;
+      overflow-x: hidden;
+      perspective: 1200px;
+    }
+    h1, h2, h3, h4 {
+      font-family: 'Canela', serif;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+    
+    /* UI CONTROLS */
+    .ui-controls {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .control-panel {
+      background: rgba(10,10,10,0.85);
+      padding: 8px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(212,175,55,0.3);
+      backdrop-filter: blur(15px);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .lang-btn, .audio-btn {
+      background: transparent;
+      border: none;
+      color: var(--ivory);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      opacity: 0.6;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .lang-btn.active { opacity: 1; color: var(--gold); }
+    .audio-btn.active { opacity: 1; color: var(--gold); }
+    
+    /* NDA OVERLAY */
+    #nda-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100vh;
+      background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 24px;
+      transition: opacity 0.8s ease;
+    }
+    
+    .nda-container {
+      background: var(--soft-black);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      transform-style: preserve-3d;
+      transform: rotateX(5deg);
+    }
+    
+    .nda-header h2 { font-size: 28px; color: var(--gold); margin-bottom: 8px; }
+    
+    .nda-form input {
+      width: 100%; padding: 14px 16px; margin-bottom: 16px;
+      background: var(--charcoal); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; color: var(--ivory); font-size: 14px;
+      transition: var(--transition);
+    }
+    
+    #signature-pad {
+      width: 100%; height: 140px; background: var(--charcoal);
+      border: 1px dashed rgba(212, 175, 55, 0.4); border-radius: 6px;
+      cursor: crosshair;
+    }
+    
+    #submit-nda {
+      width: 100%; padding: 16px; background: var(--gold);
+      color: var(--charcoal); border: none; border-radius: 6px;
+      font-weight: 600; font-size: 15px; cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    #submit-nda:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* MAIN CONTENT */
+    #main-content { display: none; opacity: 0; }
+    
+    section {
+      min-height: 100vh; display: flex; align-items: center;
+      justify-content: center; padding: 100px 24px;
+      position: relative; overflow: hidden;
+    }
+    
+    .section-content {
+      max-width: 1100px; width: 100%; text-align: center;
+      z-index: 5; transform-style: preserve-3d;
+    }
+    
+    .parallax-bg {
+      position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
+      background-size: cover; background-position: center; z-index: 1;
+      filter: brightness(0.4); transition: transform 0.1s ease-out;
+      will-change: transform;
+    }
+    
+    .hero-bg { background-image: url('assets/hero.png'); }
+    
+    .hero-title {
+      font-size: clamp(48px, 10vw, 92px); line-height: 0.95; margin-bottom: 32px;
+      background: linear-gradient(135deg, #fff 30%, #d4af37 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    
+    .robot-visual {
+      position: absolute; right: 5%; top: 50%; transform: translateY(-50%) rotateY(-20deg);
+      width: 45%; max-width: 600px; z-index: 6;
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.9)); pointer-events: none; opacity: 0;
+    }
+    
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px; margin-top: 60px;
+    }
+    
+    .feature-card {
+      background: rgba(26,26,26,0.6); border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 16px; padding: 40px; backdrop-filter: blur(20px);
+      transition: var(--transition); transform-style: preserve-3d; text-align: left;
+    }
+    
+    .feature-card h4 { color: var(--gold); font-size: 24px; margin-bottom: 16px; }
+    
+    .robot-card {
+      position: relative; height: 600px; overflow: hidden;
+      border-radius: 24px; border: 1px solid rgba(212,175,55,0.3);
+      background: var(--soft-black); display: flex; flex-direction: column;
+      justify-content: flex-end; transition: var(--transition); transform-style: preserve-3d;
+    }
+    
+    .robot-card img {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 1; filter: brightness(0.5);
+      transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .robot-card:hover img { transform: scale(1.1); filter: brightness(0.9); }
+    
+    .robot-card-content {
+      position: relative; z-index: 2;
+      background: linear-gradient(to top, rgba(10,10,10,1) 0%, transparent 100%);
+      padding: 40px; transform: translateZ(30px);
+    }
+    
+    .robot-card h3 { font-size: 36px; color: var(--gold); margin-bottom: 12px; }
+    
+    /* DATA TABLE */
+    .data-table-container {
+      margin-top: 60px; overflow-x: auto; border-radius: 16px;
+      border: 1px solid rgba(212,175,55,0.2); background: rgba(26,26,26,0.4);
+      backdrop-filter: blur(20px);
+    }
+    
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    th { color: var(--gold); text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
+    
+    /* INFOGRAPHIC SECTION */
+    .infographic-container {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+      align-items: center; margin-top: 80px; text-align: left;
+    }
+    
+    .infographic-img {
+      width: 100%; border-radius: 20px; box-shadow: 0 30px 100px rgba(0,0,0,0.8);
+      border: 1px solid rgba(212,175,55,0.3);
+    }
+    
+    .nav-dots {
+      position: fixed; right: 40px; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 16px; z-index: 100;
+    }
+    
+    .nav-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: rgba(255,255,255,0.1); cursor: pointer; transition: var(--transition);
+    }
+    
+    .nav-dot.active { background: var(--gold); transform: scale(1.6); box-shadow: 0 0 20px var(--gold); }
+    
+    .reveal-up { opacity: 0; transform: translateY(120px) rotateX(15deg); }
+    
+    footer { padding: 60px; text-align: center; opacity: 0.4; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); }
+    
+    .cta-button {
+      display: inline-block; padding: 20px 56px; background: var(--gold);
+      color: var(--charcoal); text-decoration: none; border-radius: 12px;
+      font-weight: 600; font-size: 18px; margin-top: 40px; transition: var(--transition);
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+    }
+
+    /* AUDIO CONTROLLER UI */
+    .audio-visualizer {
+      display: flex; gap: 3px; height: 12px; align-items: flex-end; margin-left: 10px;
+    }
+    .bar { width: 2px; background: var(--gold); height: 100%; animation: pulse 1s infinite; }
+    .bar:nth-child(2) { animation-delay: 0.2s; }
+    .bar:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { 0% { height: 20%; } 50% { height: 100%; } 100% { height: 20%; } }
+    .muted .bar { animation: none; height: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND MUSIC (Muted by default for browser compliance) -->
+  <audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/audio/2022/01/18/audio_d0a1b8d14d.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="ui-controls">
+    <div class="control-panel">
+      <button class="lang-btn active" data-lang="en" onclick="switchLanguage('en')">EN</button>
+      <button class="lang-btn" data-lang="es" onclick="switchLanguage('es')">ES</button>
+      <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.1);"></div>
+      <button class="audio-btn" id="toggle-audio" onclick="toggleAudio()">
+        <span id="audio-icon">🔈</span>
+        <div class="audio-visualizer muted" id="visualizer">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+      </button>
+      <button class="audio-btn" id="talk-reading" onclick="talkPresentation()">
+        <span data-i18n="talk_btn">Listen</span> 🎙️
+      </button>
+    </div>
+  </div>
+
+  <div id="nda-overlay">
+    <div class="nda-container">
+      <div class="nda-header">
+        <h2 data-i18n="nda_title">Confidential Access</h2>
+        <p data-i18n="nda_subtitle">AI Dynamic.pro • Investor Intelligence</p>
+      </div>
+      <form id="nda-form" class="nda-form">
+        <input type="text" id="name" data-i18n-placeholder="input_name" placeholder="Full Name *" required>
+        <input type="email" id="email" data-i18n-placeholder="input_email" placeholder="Professional Email *" required>
+        <input type="text" id="company" data-i18n-placeholder="input_company" placeholder="Company / Fund *" required>
+        <div class="signature-wrapper">
+          <canvas id="signature-pad" style="width:100%; height:140px;"></canvas>
+          <button type="button" id="clear-signature" style="background:none; border:none; color:var(--gold); font-size:12px; cursor:pointer; margin-top:8px;" data-i18n="clear_signature">Clear Signature</button>
+        </div>
+        <div style="margin:20px 0; font-size:13px; opacity:0.8;">
+          <input type="checkbox" id="consent" required>
+          <label for="consent" data-i18n="nda_consent">I agree to the non-disclosure terms and electronic signature requirements.</label>
+        </div>
+        <button type="submit" id="submit-nda" data-i18n="access_button" disabled>Access Intelligence</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <section id="hero">
+      <div class="parallax-bg hero-bg"></div>
+      <div class="section-content">
+        <span class="section-number reveal-up">01</span>
+        <h1 class="hero-title reveal-up" data-i18n="hero_title">Intelligence That Yields</h1>
+        <p class="hero-subtitle reveal-up" data-i18n="hero_subtitle">The first vertically integrated platform merging premium Florida farmland with high-dexterity Chinese humanoid robotics.</p>
+        <a href="#matrix" class="cta-button reveal-up" data-i18n="explore_vision">View Data Room</a>
+      </div>
+      <img src="assets/hero.png" class="robot-visual" id="hero-robot">
+    </section>
+
+    <section id="matrix">
+      <div class="section-content">
+        <span class="section-number reveal-up">02</span>
+        <h2 class="section-title reveal-up" data-i18n="matrix_title">The Humanoid Matrix</h2>
+        <p class="section-copy reveal-up" data-i18n="matrix_copy">Comparative breakdown of enterprise humanoid platforms for agricultural deployment.</p>
+        
+        <div class="data-table-container reveal-up">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="col_model">Humanoid Model</th>
+                <th data-i18n="col_tasks">Agri-Tasks</th>
+                <th data-i18n="col_payload">Payload / DOF</th>
+                <th data-i18n="col_price">Price (China)</th>
+                <th data-i18n="col_recommend">Recommendation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Unitree G1</strong></td>
+                <td data-i18n="g1_tasks">Patrol, Sensor Mapping, Soil Data</td>
+                <td>2kg / 23-43 DOF</td>
+                <td>$13.5k - $28k</td>
+                <td data-i18n="g1_rec">Data Fleet / Surveillance</td>
+              </tr>
+              <tr>
+                <td><strong>AgiBot A2</strong></td>
+                <td data-i18n="a2_tasks">Dexterous Harvesting, Pruning</td>
+                <td>5kg / 40+ DOF</td>
+                <td>$56k - $110k</td>
+                <td data-i18n="a2_rec">High-Precision Work</td>
+              </tr>
+              <tr>
+                <td><strong>Fourier GR-1</strong></td>
+                <td data-i18n="gr1_tasks">Heavy Transport, Field Prep</td>
+                <td>50kg / 32+ DOF</td>
+                <td>$49k - $80k</td>
+                <td data-i18n="gr1_rec">Heavy Logistics</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div style="margin-top:40px; text-align:left; font-size:14px; opacity:0.8;" class="reveal-up">
+          <strong data-i18n="procurement_title">Procurement Strategy:</strong>
+          <p data-i18n="procurement_copy">Buy in 10+ unit blocks to unlock 18% "Early Bird" fleet discounts in Shenzhen. Advanced direct-FOB shipping reduces overhead by 22% compared to US-localized distributors.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="roi">
+      <div class="section-content">
+        <span class="section-number reveal-up">03</span>
+        <h2 class="section-title reveal-up" data-i18n="roi_title">The ROI Engine</h2>
+        <div class="infographic-container">
+          <div class="reveal-up">
+            <h3 style="color:var(--gold); margin-bottom:20px;" data-i18n="roi_graphic_title">Traditional vs. AI Dynamic</h3>
+            <p style="margin-bottom:20px; opacity:0.9;" data-i18n="roi_copy_1">Our model delivers a 3.2x multiplier on traditional farmland ROI through three key levers:</p>
+            <ul style="list-style:none; opacity:0.9;">
+              <li style="margin-bottom:12px;">• <strong style="color:var(--gold)" data-i18n="roi_lever_1">40% OPEX Reduction</strong>: Eliminating seasonal labor volatility and housing overhead.</li>
+              <li style="margin-bottom:12px;">• <strong style="color:var(--gold)" data-i18n="roi_lever_2">22% Yield Increase</strong>: 24/7 AI-driven irrigation and precision nutrition mapping.</li>
+              <li style="margin-bottom:12px;">• <strong style="color:var(--gold)" data-i18n="roi_lever_3">New Revenue Streams</strong>: Carbon credit monetization and Tech-as-a-Service licensing.</li>
+            </ul>
+          </div>
+          <img src="assets/roi.png" class="infographic-img reveal-up" alt="ROI Infographic">
+        </div>
+      </div>
+    </section>
+
+    <section id="ask">
+      <div class="section-content">
+        <span class="section-number reveal-up">04</span>
+        <h2 class="section-title reveal-up" data-i18n="ask_title">The Capital Allocation</h2>
+        <div class="financial-highlight reveal-up">$3.5M</div>
+        <div class="feature-grid">
+          <div class="feature-card reveal-up">
+            <h4 data-i18n="alloc1_title">Land Basis (65%)</h4>
+            <p data-i18n="alloc1_copy">Acquiring 1,200 acres in FL/GA/SC with high-water security.</p>
+          </div>
+          <div class="feature-card reveal-up">
+            <h4 data-i18n="alloc2_title">Robot Fleet (20%)</h4>
+            <p data-i18n="alloc2_copy">Direct acquisition of 30 humanoids from Shenzhen partners.</p>
+          </div>
+          <div class="feature-card reveal-up">
+            <h4 data-i18n="alloc3_title">R&D Hub (15%)</h4>
+            <p data-i18n="alloc3_copy">Miami-based integration lab for LLM-agri training.</p>
+          </div>
+        </div>
+        <a href="mailto:invest@aidynamic.pro" class="cta-button reveal-up" data-i18n="request_access">Request Term Sheet</a>
+      </div>
+    </section>
+
+    <div class="nav-dots" id="nav-dots">
+      <div class="nav-dot active" data-section="hero"></div>
+      <div class="nav-dot" data-section="matrix"></div>
+      <div class="nav-dot" data-section="roi"></div>
+      <div class="nav-dot" data-section="ask"></div>
+    </div>
+
+    <footer>
+      © 2026 AI Dynamic.pro • Proprietary Intelligence • Miami, FL
+    </footer>
+  </div>
+
+  <script>
+    // ===== TRANSLATIONS (Complete ES/EN Mapping) =====
+    const translations = {
+      en: {
+        talk_btn: "Listen",
+        nda_title: "Confidential Access",
+        nda_subtitle: "AI Dynamic.pro • Investor Intelligence",
+        input_name: "Full Name *",
+        input_email: "Professional Email *",
+        input_company: "Company / Fund *",
+        clear_signature: "Clear Signature",
+        nda_consent: "I agree to the non-disclosure terms and electronic signature requirements.",
+        access_button: "Access Intelligence",
+        hero_title: "Intelligence That Yields",
+        hero_subtitle: "The first vertically integrated platform merging premium Florida farmland with high-dexterity Chinese humanoid robotics.",
+        explore_vision: "View Data Room",
+        matrix_title: "The Humanoid Matrix",
+        matrix_copy: "Comparative breakdown of enterprise humanoid platforms for agricultural deployment.",
+        col_model: "Humanoid Model",
+        col_tasks: "Agri-Tasks",
+        col_payload: "Payload / DOF",
+        col_price: "Price (China)",
+        col_recommend: "Recommendation",
+        g1_tasks: "Patrol, Sensor Mapping, Soil Data",
+        g1_rec: "Data Fleet / Surveillance",
+        a2_tasks: "Dexterous Harvesting, Pruning",
+        a2_rec: "High-Precision Work",
+        gr1_tasks: "Heavy Transport, Field Prep",
+        gr1_rec: "Heavy Logistics",
+        procurement_title: "Procurement Strategy:",
+        procurement_copy: "Buy in 10+ unit blocks to unlock 18% 'Early Bird' fleet discounts in Shenzhen. Advanced direct-FOB shipping reduces overhead by 22% compared to US-localized distributors.",
+        roi_title: "The ROI Engine",
+        roi_graphic_title: "Traditional vs. AI Dynamic",
+        roi_copy_1: "Our model delivers a 3.2x multiplier on traditional farmland ROI through three key levers:",
+        roi_lever_1: "40% OPEX Reduction",
+        roi_lever_2: "22% Yield Increase",
+        roi_lever_3: "New Revenue Streams",
+        ask_title: "The Capital Allocation",
+        alloc1_title: "Land Basis (65%)",
+        alloc1_copy: "Acquiring 1,200 acres in FL/GA/SC with high-water security.",
+        alloc2_title: "Robot Fleet (20%)",
+        alloc2_copy: "Direct acquisition of 30 humanoids from Shenzhen partners.",
+        alloc3_title: "R&D Hub (15%)",
+        alloc3_copy: "Miami-based integration lab for LLM-agri training.",
+        request_access: "Request Term Sheet"
+      },
+      es: {
+        talk_btn: "Escuchar",
+        nda_title: "Acceso Confidencial",
+        nda_subtitle: "AI Dynamic.pro • Inteligencia para Inversores",
+        input_name: "Nombre Completo *",
+        input_email: "Correo Profesional *",
+        input_company: "Empresa / Fondo *",
+        clear_signature: "Borrar Firma",
+        nda_consent: "Acepto los términos de confidencialidad y firma electrónica.",
+        access_button: "Acceder a la Inteligencia",
+        hero_title: "Inteligencia que Produce",
+        hero_subtitle: "La primera plataforma integrada que fusiona tierras de Florida con robótica humanoide china de alta destreza.",
+        explore_vision: "Ver Data Room",
+        matrix_title: "Matriz Humanoide",
+        matrix_copy: "Desglose comparativo de plataformas humanoides para despliegue agrícola.",
+        col_model: "Modelo Humanoide",
+        col_tasks: "Tareas Agrícolas",
+        col_payload: "Carga / DOF",
+        col_price: "Precio (China)",
+        col_recommend: "Recomendación",
+        g1_tasks: "Patrullaje, Mapeo de Sensores, Datos de Suelo",
+        g1_rec: "Flota de Datos / Vigilancia",
+        a2_tasks: "Cosecha Destreza, Poda",
+        a2_rec: "Trabajo de Alta Precisión",
+        gr1_tasks: "Transporte Pesado, Prep. de Campo",
+        gr1_rec: "Logística Pesada",
+        procurement_title: "Estrategia de Adquisición:",
+        procurement_copy: "Compra en bloques de 10+ unidades para desbloquear descuentos del 18% en Shenzhen. El envío directo FOB reduce costos en un 22%.",
+        roi_title: "El Motor de ROI",
+        roi_graphic_title: "Tradicional vs. AI Dynamic",
+        roi_copy_1: "Nuestro modelo ofrece un multiplicador de 3.2x sobre el ROI tradicional a través de tres palancas:",
+        roi_lever_1: "40% Reducción OPEX",
+        roi_lever_2: "22% Incremento de Rendimiento",
+        roi_lever_3: "Nuevos Flujos de Ingresos",
+        ask_title: "Asignación de Capital",
+        alloc1_title: "Base Terrestre (65%)",
+        alloc1_copy: "Adquisición de 1,200 acres en FL/GA/SC con seguridad hídrica.",
+        alloc2_title: "Flota Robótica (20%)",
+        alloc2_copy: "Adquisición directa de 30 humanoides con socios en Shenzhen.",
+        alloc3_title: "Hub de I+D (15%)",
+        alloc3_copy: "Laboratorio de integración en Miami para entrenamiento LLM-agri.",
+        request_access: "Solicitar Term Sheet"
+      }
+    };
+
+    let currentLang = 'en';
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if(translations[lang][key]) el.innerHTML = translations[lang][key];
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        if(translations[lang][key]) el.placeholder = translations[lang][key];
+      });
+      document.documentElement.lang = lang;
+      window.speechSynthesis.cancel(); // Stop talking on language change
+    }
+
+    // ===== AUDIO LOGIC =====
+    const bgMusic = document.getElementById('bg-music');
+    const visualizer = document.getElementById('visualizer');
+    let isMuted = true;
+
+    function toggleAudio() {
+      if(isMuted) {
+        bgMusic.play().catch(() => { alert("Interact with page first to enable audio."); });
+        visualizer.classList.remove('muted');
+        document.getElementById('audio-icon').innerText = '🔊';
+        isMuted = false;
+      } else {
+        bgMusic.pause();
+        visualizer.classList.add('muted');
+        document.getElementById('audio-icon').innerText = '🔈';
+        isMuted = true;
+      }
+    }
+
+    // ===== TALK READING (TEXT-TO-SPEECH) =====
+    function talkPresentation() {
+      window.speechSynthesis.cancel(); // Reset
+      const textToRead = document.querySelector('section:not([style*="display: none"])').innerText;
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.lang = currentLang === 'en' ? 'en-US' : 'es-ES';
+      utterance.rate = 0.9; // Premium slow-paced reading
+      utterance.pitch = 1.1; // Professional clarity
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // ===== SIGNATURE PAD & NDA =====
+    const canvas = document.getElementById('signature-pad');
+    const signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgba(26,26,26,1)', penColor: 'rgb(212, 175, 55)' });
+    function resizeCanvas() {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+      signaturePad.clear();
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    document.getElementById('clear-signature').addEventListener('click', () => { signaturePad.clear(); validateForm(); });
+
+    const form = document.getElementById('nda-form');
+    const submitBtn = document.getElementById('submit-nda');
+    function validateForm() {
+        const isComplete = document.getElementById('name').value && document.getElementById('email').value && document.getElementById('company').value && !signaturePad.isEmpty() && document.getElementById('consent').checked;
+        submitBtn.disabled = !isComplete;
+    }
+    ['input', 'change', 'keyup'].forEach(e => form.addEventListener(e, validateForm));
+    signaturePad.onEnd = validateForm;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('nda-overlay').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('nda-overlay').style.display = 'none';
+        const main = document.getElementById('main-content');
+        main.style.display = 'block';
+        setTimeout(() => { main.style.opacity = '1'; initScrollAnimations(); }, 50);
+        // Start audio after interaction
+        if(isMuted) toggleAudio();
+      }, 800);
+    });
+
+    function initScrollAnimations() {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.to(".hero-bg", { scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: true }, yPercent: 30, ease: "none" });
+      gsap.to("#hero-robot", { scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 }, x: 100, rotateY: 45, opacity: 1, scale: 1.1 });
+      document.querySelectorAll('.reveal-up').forEach(el => {
+        gsap.to(el, { scrollTrigger: { trigger: el, start: "top 90%" }, opacity: 1, y: 0, rotateX: 0, duration: 1.5, ease: "expo.out" });
+      });
+      document.querySelectorAll('.feature-card, .robot-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const rotateX = (e.clientY - rect.top - rect.height/2) / 10;
+          const rotateY = (rect.width/2 - (e.clientX - rect.left)) / 10;
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        });
+        card.addEventListener('mouseleave', () => card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`);
+      });
+      const sections = document.querySelectorAll('section');
+      const dots = document.querySelectorAll('.nav-dot');
+      sections.forEach((section, i) => {
+        ScrollTrigger.create({ trigger: section, start: 'top 50%', end: 'bottom 50%', onEnter: () => setActiveDot(i), onEnterBack: () => setActiveDot(i) });
+      });
+      function setActiveDot(index) { dots.forEach(dot => dot.classList.toggle('active', dot.dataset.section === sections[index].id)); }
+    }
+  </script>
+</body>
+</html>
